@@ -48,19 +48,21 @@ export default function RedditPage() {
     }, [redditPosts]);
 
     const filteredPosts = useMemo(() => {
-        return redditPosts.filter((post) => {
-            const matchesSearch =
-                post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                post.subreddit.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesSubreddit =
-                subredditFilter === "all" || post.subreddit === subredditFilter;
-            const matchesCluster =
-                clusterFilter === "all" ||
-                (clusterFilter === "assigned" && post.cluster_id) ||
-                (clusterFilter === "unassigned" && !post.cluster_id);
+        return redditPosts
+            .filter((post) => {
+                const matchesSearch =
+                    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    post.subreddit.toLowerCase().includes(searchTerm.toLowerCase());
+                const matchesSubreddit =
+                    subredditFilter === "all" || post.subreddit === subredditFilter;
+                const matchesCluster =
+                    clusterFilter === "all" ||
+                    (clusterFilter === "assigned" && post.cluster_id) ||
+                    (clusterFilter === "unassigned" && !post.cluster_id);
 
-            return matchesSearch && matchesSubreddit && matchesCluster;
-        });
+                return matchesSearch && matchesSubreddit && matchesCluster;
+            })
+            .sort((a, b) => Number(a.no) - Number(b.no)); // 번호순 정렬
     }, [redditPosts, searchTerm, subredditFilter, clusterFilter]);
 
     const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
