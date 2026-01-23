@@ -7,8 +7,9 @@ import { KPIGrid } from "@/components/shared/KPIGrid";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Link2, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { getProductColorClass } from "@/lib/category-colors";
 
 export default function OverviewPage() {
   const router = useRouter();
@@ -74,26 +75,47 @@ export default function OverviewPage() {
                 {randomScenarios.map((scenario) => (
                   <Card
                     key={scenario.scenario_id}
-                    className="cursor-pointer transition-shadow hover:shadow-md"
+                    className="group cursor-pointer transition-all duration-300 ease-out hover:shadow-xl hover:shadow-[#A50034]/10 hover:-translate-y-1 bg-white border-l-4"
+                    style={{ 
+                      borderLeftColor: scenario.products.length >= 3 ? '#A50034' : '#e5e7eb',
+                    }}
                     onClick={() => router.push("/scenarios")}
                   >
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm leading-tight">
-                        {scenario.title}
-                      </CardTitle>
+                    <CardHeader className="pb-3 relative">
+                      <div className="flex items-start justify-between gap-2">
+                        <CardTitle className="text-sm leading-tight group-hover:text-[#A50034] transition-colors duration-300">
+                          {scenario.title}
+                        </CardTitle>
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 group-hover:bg-[#A50034] transition-all duration-300">
+                          <Eye className="h-3 w-3 text-muted-foreground group-hover:text-white transition-colors duration-300" />
+                        </div>
+                      </div>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Badge className="bg-[#A50034]">
-                          {scenario.products[0]?.name}
-                        </Badge>
+                      {/* 연결된 제품들 - 카테고리별 색상 적용 */}
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <Link2 className="h-3 w-3 text-muted-foreground group-hover:text-[#A50034] transition-colors duration-300" />
+                        {scenario.products.slice(0, 3).map((product, idx) => (
+                          <Badge 
+                            key={idx} 
+                            variant="outline"
+                            className={`text-xs transition-all duration-300 group-hover:scale-105 ${getProductColorClass(product.name)}`}
+                          >
+                            {product.name}
+                          </Badge>
+                        ))}
+                        {scenario.products.length > 3 && (
+                          <Badge variant="secondary" className="text-xs group-hover:bg-[#A50034]/10 group-hover:text-[#A50034] transition-colors duration-300">
+                            +{scenario.products.length - 3}
+                          </Badge>
+                        )}
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" className="text-xs group-hover:bg-[#A50034] group-hover:text-white transition-colors duration-300">
                           {scenario.cluster_id}
                         </Badge>
                         {scenario.content_type && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs group-hover:border-[#A50034]/30 transition-colors duration-300">
                             {scenario.content_type.split(" ")[0]}
                           </Badge>
                         )}

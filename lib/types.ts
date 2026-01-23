@@ -40,6 +40,7 @@ export interface Scenario {
   status: "New" | "Selected" | "In Production" | "Published";
   created_at: string;
   content_type?: string;
+  categoryDiversity?: number; // 카테고리 다양성 점수 (1-5, 높을수록 좋은 조합)
   hook_variations?: {
     empathy: string;
     informative: string;

@@ -101,23 +101,50 @@ export async function loadScenariosCSV(): Promise<Scenario[]> {
         });
 
         return result.data.map((row, index) => {
+            // 다중 제품 파싱 (쉼표로 구분)
+            const productNames = (row.products || row.primary_product || "").split(",").map((p: string) => p.trim()).filter(Boolean);
+            const productRoles = (row.product_roles || row.product_feature || "").split(",").map((r: string) => r.trim());
+            
+            // 제품별 카테고리 매핑
+            const categoryMap: Record<string, string> = {
+                "공기청정기": "환경", "가습기": "환경", "제습기": "환경", "에어컨": "환경",
+                "정수기": "주방", "식기세척기": "주방", "오븐": "주방", "냉장고": "주방",
+                "세탁기": "세탁", "건조기": "세탁",
+                "스타일러": "의류관리",
+                "무선청소기": "청소", "로봇청소기": "청소",
+                "TV": "엔터테인먼트", "프로젝터": "엔터테인먼트", "사운드바": "엔터테인먼트",
+                "씽큐": "플랫폼", "webOS": "플랫폼",
+                "신발관리기": "위생",
+                "AI로봇": "미래가전",
+            };
+
+            const products = productNames.map((name: string, i: number) => ({
+                product_id: `prod-${index}-${i}`,
+                name: name,
+                category: categoryMap[name] || "General",
+                tags: productRoles[i] ? [productRoles[i]] : [],
+                capabilities: [],
+                active: true,
+            }));
+
             return {
                 scenario_id: row.scenario_id || `SC${String(index + 1).padStart(3, '0')}`,
                 cluster_id: row.cluster_id || "",
                 title: row.scenario_title || "Untitled Scenario",
                 hook: row.content_outline || "",
-                products: [{
+                products: products.length > 0 ? products : [{
                     product_id: `prod-${index}`,
-                    name: row.primary_product || "",
+                    name: "Unknown",
                     category: "General",
-                    tags: (row.product_feature || "").split(",").map((t: string) => t.trim()).filter(Boolean),
+                    tags: [],
                     capabilities: [],
                     active: true,
                 }],
-                rationale: `${row.user_benefit || ""} | ${row.product_feature || ""}`,
+                rationale: row.synergy || `${row.user_benefit || ""} | ${row.product_feature || ""}`,
                 status: "New" as const,
                 created_at: new Date().toISOString(),
                 content_type: row.content_type || "",
+                categoryDiversity: parseInt(row.category_diversity) || 1,
             };
         });
     } catch (error) {
