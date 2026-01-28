@@ -30,6 +30,14 @@ export interface Product {
   active: boolean;
 }
 
+// 콘텐츠 구조 (고객 POV → LG 솔루션 → 고객 Benefit → 브랜드 약속)
+export interface ContentStructure {
+  customerPOV: string;      // 고객 POV (문제/상황 인식)
+  lgSolution: string;       // LG 통합 솔루션 (제품 조합 해결책)
+  customerBenefit: string;  // 고객 Benefit (얻는 가치)
+  brandPromise: string;     // LG브랜드 약속 (브랜드 메시지)
+}
+
 export interface Scenario {
   scenario_id: string;
   cluster_id: string;
@@ -41,6 +49,7 @@ export interface Scenario {
   created_at: string;
   content_type?: string;
   categoryDiversity?: number; // 카테고리 다양성 점수 (1-5, 높을수록 좋은 조합)
+  contentStructure?: ContentStructure; // 새로운 콘텐츠 구조
   hook_variations?: {
     empathy: string;
     informative: string;

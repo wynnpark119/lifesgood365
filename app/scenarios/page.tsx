@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Eye, Star, Zap, Link2, CheckCircle2, XCircle } from "lucide-react";
+import { Eye, Star, Zap, Link2, CheckCircle2, XCircle, User, Lightbulb, Gift, Heart } from "lucide-react";
 import { Scenario } from "@/lib/types";
 import { categoryColors, getCategoryColorClass } from "@/lib/category-colors";
 
@@ -130,75 +130,71 @@ export default function ScenariosPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {/* 핵심 규칙 */}
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* 콘텐츠 구조 4단계 */}
               <div className="space-y-3">
                 <h4 className="font-semibold text-sm flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  좋은 조합
+                  콘텐츠 구조 4단계
                 </h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <span className="text-green-600 font-bold">✓</span>
-                    서로 다른 카테고리 제품 2개 이상 연결
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-green-600 font-bold">✓</span>
-                    스타일러(의류) + 세탁기(세탁) + 공기청정기(환경)
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-green-600 font-bold">✓</span>
-                    에어컨(환경) + 사운드바(엔터) + 씽큐(플랫폼)
-                  </li>
-                </ul>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-white text-xs">1</div>
+                    <span className="text-blue-700 font-medium">고객 POV</span>
+                    <span className="text-muted-foreground">- 문제/걱정을 1인칭으로</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#A50034] text-white text-xs">2</div>
+                    <span className="text-[#A50034] font-medium">LG 통합 솔루션</span>
+                    <span className="text-muted-foreground">- 제품 조합과 역할</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500 text-white text-xs">3</div>
+                    <span className="text-green-700 font-medium">고객 Benefit</span>
+                    <span className="text-muted-foreground">- 구체적 결과/가치</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-500 text-white text-xs">4</div>
+                    <span className="text-purple-700 font-medium">LG브랜드 약속</span>
+                    <span className="text-muted-foreground">- Life's Good when...</span>
+                  </div>
+                </div>
               </div>
 
-              {/* 피해야 할 조합 */}
-              <div className="space-y-3">
-                <h4 className="font-semibold text-sm flex items-center gap-2">
-                  <XCircle className="h-4 w-4 text-red-500" />
-                  피해야 할 조합
-                </h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <span className="text-red-500 font-bold">✗</span>
-                    같은 카테고리 제품끼리만 연결
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-red-500 font-bold">✗</span>
-                    스타일러 + 청소기 (둘다 털 제거 = 시너지 약함)
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-red-500 font-bold">✗</span>
-                    냉장고 + 정수기 + 오븐 (주방만 3개)
-                  </li>
-                </ul>
-              </div>
-
-              {/* 다양성 점수 가이드 */}
+              {/* 좋은/피해야 할 조합 */}
               <div className="space-y-3">
                 <h4 className="font-semibold text-sm flex items-center gap-2">
                   <Star className="h-4 w-4 text-yellow-500" />
-                  카테고리 다양성 점수
+                  제품 조합 가이드
                 </h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-center gap-2">
-                    {renderDiversityStars(5)}
-                    <span>3+ 카테고리 / 4개 제품</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    {renderDiversityStars(4)}
-                    <span>3 카테고리 조합</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    {renderDiversityStars(2)}
-                    <span>2 카테고리 조합</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    {renderDiversityStars(1)}
-                    <span>1 카테고리 (피하기)</span>
-                  </li>
-                </ul>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="space-y-2">
+                    <span className="text-green-600 font-medium">좋은 조합</span>
+                    <ul className="space-y-1 text-muted-foreground">
+                      <li className="flex items-start gap-1">
+                        <span className="text-green-600">✓</span>
+                        다른 카테고리 2개+
+                      </li>
+                      <li className="flex items-start gap-1">
+                        <span className="text-green-600">✓</span>
+                        스타일러+세탁기+공청기
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="space-y-2">
+                    <span className="text-red-500 font-medium">피할 조합</span>
+                    <ul className="space-y-1 text-muted-foreground">
+                      <li className="flex items-start gap-1">
+                        <span className="text-red-500">✗</span>
+                        같은 카테고리만
+                      </li>
+                      <li className="flex items-start gap-1">
+                        <span className="text-red-500">✗</span>
+                        냉장고+정수기+오븐
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -255,19 +251,67 @@ export default function ScenariosPage() {
                   </div>
                 </div>
 
-                {/* 콘텐츠 구성 */}
+                {/* 콘텐츠 구성 - 새로운 4단계 구조 */}
                 <div>
                   <Label className="text-base font-semibold">📝 콘텐츠 구성</Label>
-                  <div className="mt-2 space-y-2 rounded-lg border p-4">
-                    {parseOutline(selectedScenario.hook).map((line, index) => (
-                      <div key={index} className="flex gap-3">
-                        <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[#A50034] text-xs font-bold text-white">
-                          {index + 1}
+                  {selectedScenario.contentStructure ? (
+                    <div className="mt-3 space-y-0">
+                      {/* 1. 고객 POV */}
+                      <div className="flex gap-3 p-4 rounded-t-lg bg-gradient-to-r from-blue-50 to-blue-100 border border-b-0">
+                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-500 text-white">
+                          <User className="h-4 w-4" />
                         </div>
-                        <p className="flex-1 text-sm leading-relaxed">{line.replace(/^\d+\.\s*/, "")}</p>
+                        <div className="flex-1">
+                          <h4 className="text-xs font-semibold text-blue-700 mb-1">1. 고객 POV</h4>
+                          <p className="text-sm leading-relaxed text-blue-900">"{selectedScenario.contentStructure.customerPOV}"</p>
+                        </div>
                       </div>
-                    ))}
-                  </div>
+                      
+                      {/* 2. LG 통합 솔루션 */}
+                      <div className="flex gap-3 p-4 bg-gradient-to-r from-[#A50034]/5 to-[#A50034]/10 border-x">
+                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#A50034] text-white">
+                          <Lightbulb className="h-4 w-4" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-xs font-semibold text-[#A50034] mb-1">2. LG 통합 솔루션</h4>
+                          <p className="text-sm leading-relaxed text-gray-800">{selectedScenario.contentStructure.lgSolution}</p>
+                        </div>
+                      </div>
+                      
+                      {/* 3. 고객 Benefit */}
+                      <div className="flex gap-3 p-4 bg-gradient-to-r from-green-50 to-green-100 border-x">
+                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white">
+                          <Gift className="h-4 w-4" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-xs font-semibold text-green-700 mb-1">3. 고객 Benefit</h4>
+                          <p className="text-sm leading-relaxed text-green-900">{selectedScenario.contentStructure.customerBenefit}</p>
+                        </div>
+                      </div>
+                      
+                      {/* 4. LG브랜드 약속 */}
+                      <div className="flex gap-3 p-4 rounded-b-lg bg-gradient-to-r from-purple-50 to-purple-100 border border-t-0">
+                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-purple-500 text-white">
+                          <Heart className="h-4 w-4" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-xs font-semibold text-purple-700 mb-1">4. LG브랜드 약속</h4>
+                          <p className="text-sm leading-relaxed text-purple-900 font-medium italic">"{selectedScenario.contentStructure.brandPromise}"</p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="mt-2 space-y-2 rounded-lg border p-4">
+                      {parseOutline(selectedScenario.hook).map((line, index) => (
+                        <div key={index} className="flex gap-3">
+                          <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[#A50034] text-xs font-bold text-white">
+                            {index + 1}
+                          </div>
+                          <p className="flex-1 text-sm leading-relaxed">{line.replace(/^\d+\.\s*/, "")}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* 시너지 효과 */}

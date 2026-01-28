@@ -127,6 +127,14 @@ export async function loadScenariosCSV(): Promise<Scenario[]> {
                 active: true,
             }));
 
+            // 새로운 콘텐츠 구조 파싱
+            const contentStructure = (row.customer_pov && row.lg_solution && row.customer_benefit && row.brand_promise) ? {
+                customerPOV: row.customer_pov,
+                lgSolution: row.lg_solution,
+                customerBenefit: row.customer_benefit,
+                brandPromise: row.brand_promise,
+            } : undefined;
+
             return {
                 scenario_id: row.scenario_id || `SC${String(index + 1).padStart(3, '0')}`,
                 cluster_id: row.cluster_id || "",
@@ -145,6 +153,7 @@ export async function loadScenariosCSV(): Promise<Scenario[]> {
                 created_at: new Date().toISOString(),
                 content_type: row.content_type || "",
                 categoryDiversity: parseInt(row.category_diversity) || 1,
+                contentStructure,
             };
         });
     } catch (error) {
