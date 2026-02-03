@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useStore } from "@/lib/store";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { VARIANT_LABELS } from "@/lib/variant";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -24,8 +25,9 @@ const termColorClasses = [
 ];
 
 export default function ClustersPage() {
-    const { clusters, redditPosts, setClusters } = useStore();
+    const { clusters, redditPosts, variant } = useStore();
     const [selectedCluster, setSelectedCluster] = useState<Cluster | null>(null);
+    const variantLabel = VARIANT_LABELS[variant];
 
     const handleExportCluster = (cluster: Cluster) => {
         const clusterPosts = redditPosts.filter((p) => p.cluster_id === cluster.cluster_id);
@@ -37,7 +39,7 @@ export default function ClustersPage() {
         <div className="flex flex-col">
             <PageHeader
                 title="Clustering Results"
-                description={`${clusters.length} AI-generated topic clusters from Reddit data`}
+                description={`${variantLabel}: ${clusters.length} intent-based clusters from Reddit data`}
             />
 
             <div className="space-y-6 p-8">

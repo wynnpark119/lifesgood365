@@ -1,13 +1,15 @@
 import Papa from "papaparse";
 import { RedditPost, Product, Scenario, Cluster } from "./types";
+import { type Variant, getDataPathPrefix } from "./variant";
 
-export async function loadRedditCSV(): Promise<RedditPost[]> {
+export async function loadRedditCSV(variant: Variant = "lg365"): Promise<RedditPost[]> {
+    const prefix = getDataPathPrefix(variant);
     try {
         // Try to load reddit_cluster_results.csv first (has cluster info)
-        let response = await fetch("/data/reddit_cluster_results.csv");
+        let response = await fetch(`${prefix}/reddit_cluster_results.csv`);
         if (!response.ok) {
             // Fallback to reddit_g.csv
-            response = await fetch("/data/reddit_g.csv");
+            response = await fetch(`${prefix}/reddit_g.csv`);
             if (!response.ok) {
                 console.warn("CSV file not found, using fallback data");
                 return getFallbackRedditData();
@@ -56,9 +58,10 @@ export async function loadRedditCSV(): Promise<RedditPost[]> {
     }
 }
 
-export async function loadProductCSV(): Promise<Product[]> {
+export async function loadProductCSV(variant: Variant = "lg365"): Promise<Product[]> {
+    const prefix = getDataPathPrefix(variant);
     try {
-        const response = await fetch("/data/lg_g.csv");
+        const response = await fetch(`${prefix}/lg_g.csv`);
         if (!response.ok) {
             console.warn("CSV file not found, using fallback data");
             return getFallbackProductData();
@@ -71,23 +74,31 @@ export async function loadProductCSV(): Promise<Product[]> {
             skipEmptyLines: true,
         });
 
-        return result.data.map((row, index) => ({
-            product_id: row.product_id || `prod-${index + 1}`,
-            name: row["제품명"] || row.name || row.Name || "",
-            category: row.category || row.Category || "General",
-            tags: (row["태그"] || row.tags || row.Tags || "").split(",").map((t: string) => t.trim()).filter(Boolean),
-            capabilities: (row.capabilities || row.Capabilities || "").split(",").map((c: string) => c.trim()).filter(Boolean),
-            active: row.active === "true" || row.active === "1" || row.Active === "true" || true,
-        }));
+        const isMonthlyTVOnly = variant === "monthly"; // Monthly LG 시연: TV만 On
+        return result.data.map((row, index) => {
+            const name = row["제품명"] || row.name || row.Name || "";
+            const active = isMonthlyTVOnly
+                ? name.includes("TV")
+                : (row.active === "true" || row.active === "1" || row.Active === "true" || true);
+            return {
+                product_id: row.product_id || `prod-${index + 1}`,
+                name,
+                category: row.category || row.Category || "General",
+                tags: (row["태그"] || row.tags || row.Tags || "").split(",").map((t: string) => t.trim()).filter(Boolean),
+                capabilities: (row.capabilities || row.Capabilities || "").split(",").map((c: string) => c.trim()).filter(Boolean),
+                active,
+            };
+        });
     } catch (error) {
         console.error("Failed to load Product CSV:", error);
         return getFallbackProductData();
     }
 }
 
-export async function loadScenariosCSV(): Promise<Scenario[]> {
+export async function loadScenariosCSV(variant: Variant = "lg365"): Promise<Scenario[]> {
+    const prefix = getDataPathPrefix(variant);
     try {
-        const response = await fetch("/data/lg_scenarios.csv");
+        const response = await fetch(`${prefix}/lg_scenarios.csv`);
         if (!response.ok) {
             console.warn("Scenarios CSV file not found, using fallback data");
             return getFallbackScenarioData();
@@ -344,9 +355,10 @@ function getFallbackScenarioData(): Scenario[] {
 
 
 
-export async function loadClustersFromRedditCSV(): Promise<Cluster[]> {
+export async function loadClustersFromRedditCSV(variant: Variant = "lg365"): Promise<Cluster[]> {
+  const prefix = getDataPathPrefix(variant);
   try {
-    const response = await fetch("/data/reddit_cluster_results.csv");
+    const response = await fetch(`${prefix}/reddit_cluster_results.csv`);
     if (!response.ok) {
       console.warn("Cluster CSV file not found");
       return [];
@@ -399,7 +411,8 @@ export async function loadClustersFromRedditCSV(): Promise<Cluster[]> {
       });
     });
 
-    return clusters.sort((a, b) => parseInt(a.cluster_id) - parseInt(b.cluster_id));
+    const num = (id: string) => parseInt(id.replace(/\D/g, ""), 10) || 0;
+    return clusters.sort((a, b) => num(a.cluster_id) - num(b.cluster_id));
   } catch (error) {
     console.error("Failed to load clusters from CSV:", error);
     return [];

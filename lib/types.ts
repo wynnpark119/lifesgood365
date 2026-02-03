@@ -1,3 +1,5 @@
+import type { Variant } from "./variant";
+
 // Core Data Models
 export interface RedditPost {
   id: string;
@@ -75,6 +77,7 @@ export interface SearchQuery {
 // Store State
 export interface AppState {
   // Data
+  variant: Variant;
   redditPosts: RedditPost[];
   clusters: Cluster[];
   products: Product[];
@@ -87,6 +90,7 @@ export interface AppState {
   isLoadingScenarios: boolean;
   
   // Actions
+  setVariant: (variant: Variant) => void;
   setRedditPosts: (posts: RedditPost[]) => void;
   setClusters: (clusters: Cluster[]) => void;
   setProducts: (products: Product[]) => void;

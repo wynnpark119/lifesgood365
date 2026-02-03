@@ -5,9 +5,11 @@ import { AppState, LogEvent, Scenario } from "./types";
 import { loadRedditCSV, loadProductCSV, loadScenariosCSV, loadClustersFromRedditCSV } from "./csv";
 import { runClustering as runClusteringAlgo } from "./clustering";
 import { generateScenarios as generateScenariosAlgo } from "./recommend";
+import { DEFAULT_VARIANT, type Variant } from "./variant";
 
 export const useStore = create<AppState>((set, get) => ({
     // Initial state
+    variant: DEFAULT_VARIANT,
     redditPosts: [],
     clusters: [],
     products: [],
@@ -27,6 +29,7 @@ export const useStore = create<AppState>((set, get) => ({
     isLoadingScenarios: false,
 
     // Setters
+    setVariant: (variant) => set({ variant }),
     setRedditPosts: (posts) => set({ redditPosts: posts }),
     setClusters: (clusters) => set({ clusters }),
     setProducts: (products) => set({ products }),
@@ -143,13 +146,17 @@ export const useStore = create<AppState>((set, get) => ({
     },
 }));
 
-// Initialize data on app load
-export async function initializeStore() {
+// Initialize data on app load (variant: lg365 | monthly)
+export async function initializeStore(variant?: Variant) {
+    const { getVariant } = await import("./variant");
+    const v = variant ?? getVariant();
+    useStore.setState({ variant: v });
+
     const [posts, products, scenarios, clusters] = await Promise.all([
-        loadRedditCSV(),
-        loadProductCSV(),
-        loadScenariosCSV(),
-        loadClustersFromRedditCSV(),
+        loadRedditCSV(v),
+        loadProductCSV(v),
+        loadScenariosCSV(v),
+        loadClustersFromRedditCSV(v),
     ]);
 
     useStore.setState({
@@ -163,6 +170,6 @@ export async function initializeStore() {
         actor: "system",
         action: "Initialize Data",
         entity: "System",
-        detail: `Loaded ${posts.length} Reddit posts, ${products.length} products, ${scenarios.length} scenarios, and ${clusters.length} clusters`,
+        detail: `Loaded ${posts.length} Reddit posts, ${products.length} products, ${scenarios.length} scenarios, and ${clusters.length} clusters (${v})`,
     });
 }

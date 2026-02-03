@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useStore } from "@/lib/store";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { VARIANT_LABELS } from "@/lib/variant";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -12,8 +13,9 @@ import { Scenario } from "@/lib/types";
 import { categoryColors, getCategoryColorClass } from "@/lib/category-colors";
 
 export default function ScenariosPage() {
-  const { scenarios } = useStore();
+  const { scenarios, variant } = useStore();
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
+  const isMonthlyLG = variant === "monthly";
 
   // 콘텐츠 아웃라인을 단계별로 파싱
   const parseOutline = (outline: string) => {
@@ -38,7 +40,9 @@ export default function ScenariosPage() {
     <div className="flex flex-col">
       <PageHeader
         title="Content Scenarios"
-        description={`${scenarios.length}개 다중 제품 연결 콘텐츠 시나리오`}
+        description={isMonthlyLG
+          ? `${scenarios.length}개 TV × 클러스터 기반 콘텐츠 시나리오`
+          : `${scenarios.length}개 다중 제품 연결 콘텐츠 시나리오`}
       />
 
       <div className="space-y-6 p-8">
@@ -74,10 +78,10 @@ export default function ScenariosPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {/* 연결된 제품들 */}
+                  {/* 연결된 제품들 (Monthly LG: TV 단일) */}
                   <div className="flex flex-wrap items-center gap-1.5">
                     <Link2 className="h-3.5 w-3.5 text-muted-foreground group-hover:text-[#A50034] transition-colors duration-300" />
-                    {scenario.products.slice(0, 3).map((product, idx) => (
+                    {scenario.products.slice(0, isMonthlyLG ? 1 : 3).map((product, idx) => (
                       <Badge 
                         key={idx} 
                         variant="outline"
@@ -86,21 +90,23 @@ export default function ScenariosPage() {
                         {product.name}
                       </Badge>
                     ))}
-                    {scenario.products.length > 3 && (
+                    {!isMonthlyLG && scenario.products.length > 3 && (
                       <Badge variant="secondary" className="text-xs group-hover:bg-[#A50034]/10 group-hover:text-[#A50034] transition-colors duration-300">
                         +{scenario.products.length - 3}
                       </Badge>
                     )}
                   </div>
 
-                  {/* 카테고리 다양성 + 클러스터 */}
+                  {/* 카테고리 다양성 + 클러스터 (Monthly LG: 클러스터 강조) */}
                   <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground group-hover:text-[#A50034] transition-colors duration-300">다양성:</span>
-                      {renderDiversityStars(scenario.categoryDiversity)}
-                    </div>
+                    {!isMonthlyLG && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground group-hover:text-[#A50034] transition-colors duration-300">다양성:</span>
+                        {renderDiversityStars(scenario.categoryDiversity)}
+                      </div>
+                    )}
                     <Badge variant="secondary" className="text-xs group-hover:bg-[#A50034] group-hover:text-white transition-colors duration-300">
-                      {scenario.cluster_id}
+                      {scenario.cluster_id} {isMonthlyLG && scenario.cluster_label && `· ${String(scenario.cluster_label).split(" (")[0]}`}
                     </Badge>
                   </div>
 
@@ -128,6 +134,11 @@ export default function ScenariosPage() {
               <Zap className="h-5 w-5 text-[#A50034]" />
               시나리오 설계 원칙
             </CardTitle>
+            {isMonthlyLG && (
+              <p className="text-sm text-muted-foreground mt-1">
+                TV × 클러스터 결과 기반 다양한 콘텐츠 시나리오 (클러스터와 1:1 대응 아님)
+              </p>
+            )}
           </CardHeader>
           <CardContent>
             <div className="grid gap-6 md:grid-cols-2">
@@ -161,41 +172,43 @@ export default function ScenariosPage() {
                 </div>
               </div>
 
-              {/* 좋은/피해야 할 조합 */}
-              <div className="space-y-3">
-                <h4 className="font-semibold text-sm flex items-center gap-2">
-                  <Star className="h-4 w-4 text-yellow-500" />
-                  제품 조합 가이드
-                </h4>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="space-y-2">
-                    <span className="text-green-600 font-medium">좋은 조합</span>
-                    <ul className="space-y-1 text-muted-foreground">
-                      <li className="flex items-start gap-1">
-                        <span className="text-green-600">✓</span>
-                        다른 카테고리 2개+
-                      </li>
-                      <li className="flex items-start gap-1">
-                        <span className="text-green-600">✓</span>
-                        스타일러+세탁기+공청기
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="space-y-2">
-                    <span className="text-red-500 font-medium">피할 조합</span>
-                    <ul className="space-y-1 text-muted-foreground">
-                      <li className="flex items-start gap-1">
-                        <span className="text-red-500">✗</span>
-                        같은 카테고리만
-                      </li>
-                      <li className="flex items-start gap-1">
-                        <span className="text-red-500">✗</span>
-                        냉장고+정수기+오븐
-                      </li>
-                    </ul>
+              {/* 제품 조합 가이드: LG365 다중 제품용, Monthly LG(TV 단일)에서는 미노출 */}
+              {!isMonthlyLG && (
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-sm flex items-center gap-2">
+                    <Star className="h-4 w-4 text-yellow-500" />
+                    제품 조합 가이드
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="space-y-2">
+                      <span className="text-green-600 font-medium">좋은 조합</span>
+                      <ul className="space-y-1 text-muted-foreground">
+                        <li className="flex items-start gap-1">
+                          <span className="text-green-600">✓</span>
+                          다른 카테고리 2개+
+                        </li>
+                        <li className="flex items-start gap-1">
+                          <span className="text-green-600">✓</span>
+                          스타일러+세탁기+공청기
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="space-y-2">
+                      <span className="text-red-500 font-medium">피할 조합</span>
+                      <ul className="space-y-1 text-muted-foreground">
+                        <li className="flex items-start gap-1">
+                          <span className="text-red-500">✗</span>
+                          같은 카테고리만
+                        </li>
+                        <li className="flex items-start gap-1">
+                          <span className="text-red-500">✗</span>
+                          냉장고+정수기+오븐
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -211,10 +224,17 @@ export default function ScenariosPage() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <Badge variant="secondary">{selectedScenario.scenario_id}</Badge>
                     <Badge variant="outline">{selectedScenario.cluster_id}</Badge>
-                    <div className="flex items-center gap-1 ml-auto">
-                      <span className="text-xs text-muted-foreground">다양성:</span>
-                      {renderDiversityStars(selectedScenario.categoryDiversity)}
-                    </div>
+                    {!isMonthlyLG && (
+                      <div className="flex items-center gap-1 ml-auto">
+                        <span className="text-xs text-muted-foreground">다양성:</span>
+                        {renderDiversityStars(selectedScenario.categoryDiversity)}
+                      </div>
+                    )}
+                    {isMonthlyLG && selectedScenario.cluster_label && (
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        {String(selectedScenario.cluster_label).split(" (")[0]}
+                      </span>
+                    )}
                   </div>
                   <DialogTitle className="text-xl leading-tight">
                     {selectedScenario.title}

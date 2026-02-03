@@ -11,6 +11,8 @@ import {
     Settings,
     FileText,
 } from "lucide-react";
+import { useStore } from "@/lib/store";
+import { VARIANT_LABELS } from "@/lib/variant";
 
 const navigation = [
     { name: "Overview", href: "/", icon: LayoutDashboard },
@@ -23,6 +25,8 @@ const navigation = [
 
 export function Sidebar() {
     const pathname = usePathname();
+    const variant = useStore((s) => s.variant);
+    const title = VARIANT_LABELS[variant];
 
     return (
         <div className="flex h-screen w-64 flex-col border-r bg-card">
@@ -31,7 +35,7 @@ export function Sidebar() {
                 <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#A50034] to-[#E4007C]" />
                     <div>
-                        <h1 className="text-sm font-bold">Life's Good 365 AI</h1>
+                        <h1 className="text-sm font-bold">{title}</h1>
                         <p className="text-xs text-muted-foreground">Scenario Discovery</p>
                     </div>
                 </div>
