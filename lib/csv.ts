@@ -149,6 +149,7 @@ export async function loadScenariosCSV(variant: Variant = "lg365"): Promise<Scen
             return {
                 scenario_id: row.scenario_id || `SC${String(index + 1).padStart(3, '0')}`,
                 cluster_id: row.cluster_id || "",
+                cluster_label: row.cluster_label || undefined,
                 title: row.scenario_title || "Untitled Scenario",
                 hook: row.content_outline || "",
                 products: products.length > 0 ? products : [{

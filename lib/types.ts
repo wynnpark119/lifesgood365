@@ -43,6 +43,7 @@ export interface ContentStructure {
 export interface Scenario {
   scenario_id: string;
   cluster_id: string;
+  cluster_label?: string;
   title: string;
   hook: string;
   products: Product[];
